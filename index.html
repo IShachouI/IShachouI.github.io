@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <meta name="color-scheme" content="dark" />
-  <meta name="description" content="Yaseen Osman — CS & Economics at Pomona College. A quiet, cinematic night-fishing portfolio intro." />
+  <meta name="description" content="Yaseen Osman — CS & Economics at Pomona College. A cinematic night-fishing portfolio where each cast discovers a project." />
   <title>Yaseen Osman — Portfolio</title>
   <!-- Inline SVG favicon (moon tile) — avoids an extra request / 404. -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0f1a'/%3E%3Ccircle cx='16' cy='15' r='8' fill='%23e9eef6'/%3E%3C/svg%3E" />
@@ -16,58 +16,43 @@
        ============================================================ -->
   <header class="site-header">
     <a class="brand" href="#top" aria-label="Back to top">YO</a>
-    <button id="skip-intro" class="skip-btn" type="button">
-      Skip Intro
-    </button>
+    <button id="skip-intro" class="skip-btn" type="button">Skip Intro</button>
   </header>
 
   <main id="top">
     <!-- ============================================================
          HERO — full-screen animated scene + overlay content.
-         The <canvas> renders the night-lake animation; the overlay
-         holds all real text (crisp DOM typography layered on top).
+         The <canvas> renders the night-lake animation (decorative).
+         All real content lives in the DOM layered on top.
          ============================================================ -->
     <section class="hero" aria-label="Introduction">
       <canvas id="scene" class="scene" aria-hidden="true"></canvas>
 
+      <!-- Discoverable, accessible "cast" control near the water
+           (so the canvas is never the only way to interact). -->
+      <button id="cast-line" class="cast-line" type="button"
+              aria-label="Cast a line to discover a project">
+        <span class="cast-line__dot" aria-hidden="true"></span>
+        <span class="cast-line__label">Cast a line</span>
+      </button>
+
       <div class="hero__overlay">
         <div class="hero__inner">
-          <p class="kicker">Night fishing</p>
-
-          <!-- EDIT: your name -->
+          <p class="kicker">Night fishing · a portfolio</p>
           <h1 class="name">Yaseen&nbsp;Osman</h1>
-
-          <!-- EDIT: one-line intro -->
           <p class="intro">
-            Computer Science &amp; Economics at Pomona College —
-            building thoughtful, useful software.
+            Computer Science &amp; Economics at Pomona College.
+            <span class="intro__muted">Every cast discovers something I’ve built.</span>
           </p>
 
-          <!-- Interests double as quick navigation. They are revealed
-               one-by-one as the line is reeled in, then become focusable
-               links. data-index sets the reveal order; href is the jump
-               target. EDIT text/links freely. -->
-          <nav class="chips" aria-label="Quick navigation">
-            <a class="chip" data-index="0" style="--i:0" href="#work"
-               tabindex="-1" aria-hidden="true">Software Engineering</a>
-            <a class="chip" data-index="1" style="--i:1" href="#work"
-               tabindex="-1" aria-hidden="true">AI</a>
-            <a class="chip" data-index="2" style="--i:2" href="#about"
-               tabindex="-1" aria-hidden="true">Economics</a>
-            <a class="chip" data-index="3" style="--i:3" href="#work"
-               tabindex="-1" aria-hidden="true">Useful Products</a>
-            <a class="chip" data-index="4" style="--i:4"
-               href="https://www.pomona.edu" target="_blank" rel="noopener"
-               tabindex="-1" aria-hidden="true">Pomona College</a>
-            <a class="chip" data-index="5" style="--i:5" href="#work"
-               tabindex="-1" aria-hidden="true">Projects</a>
-          </nav>
+          <!-- Projects are "caught" one-by-one and appear here as compact
+               cards. Populated from the catalog by app.js. aria-live lets
+               screen readers announce each discovery. -->
+          <ul id="reveal-cards" class="reveal-cards" aria-label="Discovered projects"
+              aria-live="polite"></ul>
 
-          <!-- Call-to-action buttons (revealed once the sequence settles). -->
           <div class="cta">
             <a class="btn btn--primary" href="#work">Explore Projects</a>
-            <a class="btn btn--ghost" href="#about">Enter Site</a>
-            <!-- Replays the fishing sequence in-place (no page reload). -->
             <button id="cast-again" class="btn btn--text" type="button"
                     aria-label="Replay the fishing animation">
               <span aria-hidden="true">↺</span> Cast Again
@@ -82,53 +67,37 @@
     </section>
 
     <!-- ============================================================
-         FOLLOW-UP SECTIONS
+         ABOUT — bio + the six focus areas (moved out of the hero)
          ============================================================ -->
     <section id="about" class="section">
       <div class="section__inner">
         <h2 class="section__title">About</h2>
-        <!-- EDIT: short bio -->
         <p class="section__body">
           I’m a Computer Science and Economics student at Pomona College,
-          interested in software engineering, AI, and building products that
-          are genuinely useful. I like work that is careful, minimal, and a
-          little bit playful.
+          interested in software engineering, AI, quantitative research, and
+          building products that are genuinely useful. I like work that is
+          careful, minimal, and a little bit playful — and I fish.
         </p>
+        <ul class="focus-areas" aria-label="Focus areas">
+          <li>Software Engineering</li>
+          <li>AI</li>
+          <li>Economics</li>
+          <li>Useful Products</li>
+          <li>Pomona College</li>
+          <li>Projects</li>
+        </ul>
       </div>
     </section>
 
+    <!-- ============================================================
+         PROJECTS — richer gallery, populated from the catalog
+         (Mizanook first). app.js renders cards here.
+         ============================================================ -->
     <section id="work" class="section section--alt">
       <div class="section__inner">
         <h2 class="section__title">Projects</h2>
-        <ul class="cards">
-          <!-- Verified public project: Nudge -->
-          <li class="card">
-            <h3>Nudge</h3>
-            <p>Social planning for friend groups — making it easy to line up
-               plans everyone actually shows up to.</p>
-            <a href="https://nudgesocial.app" target="_blank" rel="noopener" class="card__link">
-              Live site →
-            </a>
-            <a href="https://github.com/IShachouI/nudge-website" target="_blank" rel="noopener" class="card__link">
-              Code →
-            </a>
-          </li>
-          <!-- Verified public project: Claremont Student Nutrition Tracker -->
-          <li class="card">
-            <h3>Claremont Student Nutrition Tracker</h3>
-            <p>Track and log meals across the Claremont Colleges dining halls.
-               <span class="card__tag">Java</span></p>
-            <a href="https://github.com/IShachouI/Claremont-Student-Nutrition-Tracker"
-               target="_blank" rel="noopener" class="card__link">Code →</a>
-          </li>
-          <!-- Link out to the rest -->
-          <li class="card card--more">
-            <h3>More on GitHub</h3>
-            <p>Browse the rest of what I’m building and experimenting with.</p>
-            <a href="https://github.com/IShachouI?tab=repositories"
-               target="_blank" rel="noopener" class="card__link">@IShachouI →</a>
-          </li>
-        </ul>
+        <p class="section__lead">Three things I’ve built — caught above, explored here.</p>
+        <ul id="projects-gallery" class="gallery"></ul>
       </div>
     </section>
   </main>
@@ -142,6 +111,44 @@
     <a href="https://www.linkedin.com/in/yaseen-o-459205237" target="_blank" rel="noopener noreferrer">LinkedIn</a>
     <p class="copyright">© <span id="year"></span> Yaseen Osman</p>
   </footer>
+
+  <!-- ============================================================
+       PROJECT DETAIL DIALOG — native <dialog> (Esc, focus mgmt,
+       focus restore handled by the platform). Filled by app.js.
+       ============================================================ -->
+  <dialog id="project-dialog" class="dialog" aria-labelledby="dlg-title">
+    <div class="dialog__surface">
+      <button class="dialog__close" type="button" aria-label="Close dialog" data-close>×</button>
+      <p class="dialog__category" id="dlg-category"></p>
+      <h2 class="dialog__title" id="dlg-title"></h2>
+      <p class="dialog__tagline" id="dlg-tagline"></p>
+      <div class="dialog__section">
+        <h3>The problem</h3>
+        <p id="dlg-problem"></p>
+      </div>
+      <div class="dialog__section">
+        <h3>Overview</h3>
+        <p id="dlg-summary"></p>
+        <ul id="dlg-highlights" class="dialog__list"></ul>
+        <p id="dlg-note" class="dialog__note" hidden></p>
+      </div>
+      <ul id="dlg-tags" class="tags" aria-label="Technologies and tags"></ul>
+      <div id="dlg-actions" class="dialog__actions"></div>
+    </div>
+  </dialog>
+
+  <!-- Graceful fallback if JavaScript is unavailable. -->
+  <noscript>
+    <div class="noscript">
+      <p>This portfolio uses a small interactive animation. Explore the projects directly:</p>
+      <ul>
+        <li><a href="https://mizanook.com">Mizanook — systematic investing research</a></li>
+        <li><a href="https://nudgesocial.app">Nudge — social planning</a></li>
+        <li><a href="https://github.com/IShachouI/Claremont-Student-Nutrition-Tracker">Claremont Student Nutrition Tracker</a></li>
+        <li><a href="https://github.com/IShachouI">GitHub — @IShachouI</a></li>
+      </ul>
+    </div>
+  </noscript>
 
   <script type="module" src="js/app.js"></script>
 </body>

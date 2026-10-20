@@ -23,6 +23,12 @@ const lerp = (a, b, t) => a + (b - a) * t;
 // ease-out / ease-in-out helpers for calm motion
 const easeOut = (t) => 1 - Math.pow(1 - t, 3);
 const easeInOut = (t) => (t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2);
+// "#rrggbb" + alpha → "rgba(...)" (for the per-catch reveal shimmer)
+const hexToRgba = (hex, a) => {
+  const h = (hex || "#e9eef6").replace("#", "");
+  const n = parseInt(h.length === 3 ? h.replace(/(.)/g, "$1$1") : h, 16);
+  return `rgba(${(n >> 16) & 255}, ${(n >> 8) & 255}, ${n & 255}, ${a})`;
+};
 
 export class NightFishingScene {
   /**
@@ -37,6 +43,8 @@ export class NightFishingScene {
     this.canvas = canvas;
     this.ctx = canvas.getContext("2d", { alpha: false });
     this.revealCount = opts.revealCount ?? 6;
+    this.accents = opts.accents ?? [];      // per-catch accent colors (reveal shimmer)
+    this._revealGlow = null;                // active {x,y,t,color} shimmer, or null
     this.onReveal = opts.onReveal ?? (() => {});
     this.onComplete = opts.onComplete ?? (() => {});
     this.reduced = !!opts.reducedMotion;
@@ -102,11 +110,16 @@ export class NightFishingScene {
     this.rafId = requestAnimationFrame(this._loop);
   }
 
-  /** Jump straight to the settled hero: reveal any remaining items. */
+  /** Jump straight to the settled hero: reveal any *not-yet-revealed* items. */
   skip() {
     if (this.done) return;
-    for (let i = this.index; i < this.revealCount; i++) this.onReveal(i);
+    // If the current index's reveal already fired (reel in progress), start at
+    // the next one so we never emit a duplicate reveal event.
+    const start = this._revealedThis ? this.index + 1 : this.index;
+    for (let i = start; i < this.revealCount; i++) this.onReveal(i);
     this.index = this.revealCount;
+    this._revealedThis = false;
+    this._revealGlow = null;
     this.done = true;
     this.phase = "ambient";
     this.bobber.visible = false;
@@ -123,6 +136,7 @@ export class NightFishingScene {
     this.done = false;
     this._revealedThis = false;
     this._bitRippled = false;
+    this._revealGlow = null;
     this.bobber.visible = false;
     this._setPhase("cast"); // skip the long opening settle on a replay
     return true;
@@ -276,6 +290,12 @@ export class NightFishingScene {
     }
     this.ripples = this.ripples.filter((r) => r.alpha > 0.01);
 
+    // Advance / expire the per-catch reveal shimmer.
+    if (this._revealGlow) {
+      this._revealGlow.t += dt;
+      if (this._revealGlow.t > 1.5) this._revealGlow = null;
+    }
+
     // Once settled, keep the water alive with the occasional faint ripple.
     if (this.done) {
       this._ambientTimer -= dt;
@@ -298,12 +318,12 @@ export class NightFishingScene {
     switch (this.phase) {
       case "settle": {
         // Quiet beat while the scene fades in, then cast.
-        if (T > 1.0) this._setPhase("cast");
+        if (T > 0.9) this._setPhase("cast");
         break;
       }
       case "cast": {
         // Bobber flies from rod tip out to the target on an arc.
-        const dur = 0.7;
+        const dur = 0.85;
         const t = clamp(T / dur, 0, 1);
         const e = easeOut(t);
         const arc = this.H * 0.22; // peak height of the cast
@@ -319,18 +339,18 @@ export class NightFishingScene {
       case "land": {
         // Bobber settles; let the first ripples breathe.
         this._restBobber();
-        if (T > 0.22) this._setPhase("wait");
+        if (T > 0.28) this._setPhase("wait");
         break;
       }
       case "wait": {
         // Idle bob while fish circle below.
         this._restBobber();
-        if (T > 0.5) this._setPhase("bite");
+        if (T > 0.55) this._setPhase("bite");
         break;
       }
       case "bite": {
         // A quick dip + ripple — something took the line.
-        const t = clamp(T / 0.28, 0, 1);
+        const t = clamp(T / 0.32, 0, 1);
         this.bobber.x = this.castTarget.x;
         this.bobber.y = this.castTarget.y + Math.sin(Math.PI * t) * 10;
         if (T > 0.1 && !this._bitRippled) { this._splash(this.castTarget.x, this.castTarget.y, 0.7); this._bitRippled = true; }
@@ -338,9 +358,17 @@ export class NightFishingScene {
         break;
       }
       case "reel": {
-        // Reel the bobber home; reveal the caught interest as it rises.
-        if (!this._revealedThis) { this.onReveal(this.index); this._revealedThis = true; }
-        const dur = 0.7;
+        // Reel the bobber home; reveal the caught project as it rises,
+        // with a restrained shimmer in that project's accent color.
+        if (!this._revealedThis) {
+          this.onReveal(this.index);
+          this._revealedThis = true;
+          this._revealGlow = {
+            x: this.castTarget.x, y: this.castTarget.y, t: 0,
+            color: this.accents[this.index] || "#e9eef6",
+          };
+        }
+        const dur = 1.2;
         const t = clamp(T / dur, 0, 1);
         const e = easeInOut(t);
         this.bobber.x = lerp(this.castTarget.x, this.rodTip.x, e);
@@ -360,7 +388,8 @@ export class NightFishingScene {
         break;
       }
       case "pause": {
-        if (T > 0.25) this._setPhase("cast"); // next item
+        // A longer beat so each discovered project has room to be read.
+        if (T > 2.4) this._setPhase("cast"); // next item
         break;
       }
       case "ambient":
@@ -377,6 +406,12 @@ export class NightFishingScene {
     this.bobber.visible = true;
     this.bobber.x = this.castTarget.x;
     this.bobber.y = this.castTarget.y + Math.sin(this.time * 2.0) * 1.8;
+  }
+
+  /** Public: spawn a gentle ripple where the visitor taps the water. */
+  addRippleAt(x, y) {
+    if (y < this.horizon + 4) return; // ignore taps on the sky
+    this.ripples.push({ x, y, r: 1, speed: 20, alpha: 0.2, fade: 0.6 });
   }
 
   _splash(x, y, strength = 1) {
@@ -407,6 +442,7 @@ export class NightFishingScene {
     this._drawMoonPath(ctx);
     this._drawFish(ctx);
     this._drawRipples(ctx);
+    this._drawRevealGlow(ctx);
     this._drawDockAndAngler(ctx);
     this._drawLine(ctx);
     this._drawVignette(ctx, W, H);
@@ -566,6 +602,36 @@ export class NightFishingScene {
       ctx.ellipse(r.x, r.y, r.r, r.r * 0.34, 0, 0, Math.PI * 2);
       ctx.stroke();
     }
+    ctx.restore();
+  }
+
+  /** A restrained accent-colored shimmer when a project is discovered. */
+  _drawRevealGlow(ctx) {
+    const g = this._revealGlow;
+    if (!g) return;
+    const p = clamp(g.t / 1.5, 0, 1);          // 0→1 over the glow lifetime
+    const rise = easeOut(p);
+    const fade = 1 - p;                         // fade out as it rises
+    const r = lerp(this.moon.r * 0.6, this.moon.r * 2.2, rise);
+    const y = g.y - rise * 14;                  // drifts up gently as it's reeled
+    ctx.save();
+    ctx.globalCompositeOperation = "lighter";
+    // soft radial bloom
+    const grad = ctx.createRadialGradient(g.x, y, 0, g.x, y, r);
+    grad.addColorStop(0, hexToRgba(g.color, 0.5 * fade));
+    grad.addColorStop(0.5, hexToRgba(g.color, 0.14 * fade));
+    grad.addColorStop(1, hexToRgba(g.color, 0));
+    ctx.fillStyle = grad;
+    ctx.beginPath();
+    ctx.arc(g.x, y, r, 0, Math.PI * 2);
+    ctx.fill();
+    // a single thin expanding ring on the water
+    ctx.globalAlpha = 0.5 * fade;
+    ctx.strokeStyle = hexToRgba(g.color, 1);
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.ellipse(g.x, g.y, r * 0.8, r * 0.28, 0, 0, Math.PI * 2);
+    ctx.stroke();
     ctx.restore();
   }
 
