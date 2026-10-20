@@ -98,23 +98,21 @@ No code changes are needed to edit content — it all lives in `index.html`.
 ## Deploy on GitHub Pages
 
 ### Option A — your user site (`username.github.io`)
-Serves at `https://IShachouI.github.io/`.
 
-1. Create a **public** repo named exactly `IShachouI.github.io`.
+1. Create a **public** repo
 2. Put these files at the **repo root** (so `index.html` is at the top level):
    ```bash
    cd night-fishing-landing
    git init -b main
    git add .
    git commit -m "Night Fishing landing page"
-   git remote add origin https://github.com/IShachouI/IShachouI.github.io.git
+   git remote add origin https://github.com/.../....github.io.git
    git push -u origin main
    ```
 3. GitHub → repo **Settings → Pages** → Source: **Deploy from a branch** →
    Branch: `main` / `/ (root)` → **Save**. Live in a minute or two.
 
 ### Option B — a project site (any repo)
-Serves at `https://IShachouI.github.io/<repo-name>/`.
 
 1. Push these files to any repo (root or a `/docs` folder).
 2. **Settings → Pages** → Branch `main`, folder `/ (root)` (or `/docs`).
