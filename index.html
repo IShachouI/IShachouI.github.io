@@ -46,10 +46,12 @@
           </p>
 
           <!-- Projects are "caught" one-by-one and appear here as compact
-               cards. Populated from the catalog by app.js. aria-live lets
-               screen readers announce each discovery. -->
-          <ul id="reveal-cards" class="reveal-cards" aria-label="Discovered projects"
-              aria-live="polite"></ul>
+               cards. Populated from the catalog by app.js. -->
+          <ul id="reveal-cards" class="reveal-cards" aria-label="Discovered projects"></ul>
+
+          <!-- Dedicated live region: each catch writes the project name here so
+               screen readers reliably announce it (not reliant on aria-hidden). -->
+          <p id="catch-announcer" class="sr-only" role="status" aria-live="polite"></p>
 
           <div class="cta">
             <a class="btn btn--primary" href="#work">Explore Projects</a>

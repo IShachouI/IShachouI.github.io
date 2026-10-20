@@ -32,6 +32,7 @@ const revealList = $("#reveal-cards");
 const gallery = $("#projects-gallery");
 const cta = $(".cta");
 const dialog = $("#project-dialog");
+const announcer = $("#catch-announcer");
 const yearEl = $("#year");
 
 if (yearEl) yearEl.textContent = new Date().getFullYear();
@@ -163,6 +164,8 @@ function revealCard(i) {
   card.li.classList.add("is-revealed");
   card.li.removeAttribute("aria-hidden");
   card.focusables.forEach((n) => (n.tabIndex = 0));
+  // Reliably announce the caught project's name to screen readers.
+  if (announcer) announcer.textContent = `Discovered project: ${PROJECTS_BY_CATCH[i].title}`;
 }
 function hideRevealCards() {
   for (const card of revealCards) {
@@ -171,10 +174,28 @@ function hideRevealCards() {
     card.focusables.forEach((n) => (n.tabIndex = -1));
   }
 }
+/* Skip Intro visibility is kept in sync with the tab order + AT visibility,
+   so it's never a hidden-but-focusable trap. */
+function showSkip() {
+  if (!skipBtn) return;
+  skipBtn.classList.remove("is-hidden");
+  skipBtn.tabIndex = 0;
+  skipBtn.removeAttribute("aria-hidden");
+}
+function hideSkip() {
+  if (!skipBtn) return;
+  // if focus is on Skip as we hide it, move it somewhere sensible first
+  if (document.activeElement === skipBtn) {
+    (cta?.querySelector(".btn") || document.body).focus?.();
+  }
+  skipBtn.classList.add("is-hidden");
+  skipBtn.tabIndex = -1;
+  skipBtn.setAttribute("aria-hidden", "true");
+}
 function settle() {
   cta?.classList.add("is-ready");
-  skipBtn?.classList.add("is-hidden");
-  castLineBtn?.classList.add("is-ready"); // reveal the lake-side cast control
+  hideSkip();                              // hide + remove from tab order
+  castLineBtn?.classList.add("is-ready");  // reveal the lake-side cast control
 }
 
 const scene = new NightFishingScene(canvas, {
@@ -190,6 +211,7 @@ function replay() {
   const started = scene.castAgain(); // true only when already settled
   if (!started) return;
   hideRevealCards();
+  showSkip();                              // let visitors skip the replay too
   [castAgainBtn, castLineBtn].forEach((b) => b && (b.disabled = true));
 }
 // re-enable the cast controls once a replay finishes
