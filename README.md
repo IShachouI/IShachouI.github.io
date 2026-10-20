@@ -1,28 +1,52 @@
-# Night Fishing — landing page
+# Night Fishing — interactive portfolio
 
-A quiet, cinematic landing animation: a moonlit lake at night where a line is
-cast, a fish bites, and reeling in reveals your interests as premium UI chips —
-then the page settles into a clean hero. Built as a **static site** with plain
-HTML, CSS, and a vanilla-JS Canvas animation (no framework, no build step).
+A quiet, cinematic night-lake where **every cast discovers a project**: the line
+is cast, a fish bites, and reeling in reveals one of my projects as a compact
+card — then the page settles into a hero with the full Projects gallery. Built
+as a **static site** with plain HTML, CSS, and a vanilla-JS Canvas animation
+(no framework, no build step).
 
 **Interactions**
-- ~17s auto-playing intro; **Skip Intro** jumps to the settled hero.
-- **Cast Again** replays the fishing sequence in-place (no page reload).
-- The revealed interest chips are real **navigation links** (keyboard-focusable
-  only once revealed) that jump to the matching section.
-- After the intro, the water, moonlight, fish, and occasional ripples keep
-  drifting as a calm ambient loop.
+- ~15s auto-playing intro reveals three projects in order (first catch < 3s);
+  **Skip Intro** jumps straight to the settled hero.
+- **Cast Again** (and a lake-side **Cast a line** control on desktop) replay the
+  sequence in-place — guarded against double-casts and duplicate reveals.
+- Each project card opens an accessible **detail dialog** (Esc, focus trap +
+  restore).
+- Tap the water for a subtle ripple. After the intro the lake keeps a calm
+  ambient loop (water, moonlight, fish, occasional ripples).
+- `prefers-reduced-motion`: the animated sequence is skipped and all projects
+  are shown immediately over a calm scene.
+
+## Architecture
+
+Clean separation across small modules:
+
+| Concern | File |
+|---|---|
+| Scene rendering + fishing state machine | `js/scene.js` |
+| Project content (single source of truth) | `js/projects.js` |
+| UI wiring: reveals, dialog, controls | `js/app.js` |
+| Markup / sections | `index.html` |
+| Styling / theme / accents | `css/styles.css` |
+
+Projects are **data-driven**: add or edit a project in `js/projects.js` (id,
+title, category, accent, catch order, public website/repo, `showCode`, tags,
+description) and the hero reveal cards, the gallery, and the detail dialog all
+update — no other file changes. A project with private source simply omits
+`repo` and sets `showCode: false`; nothing in this repo relies on secrecy.
 
 ## File structure
 
 ```
-night-fishing-landing/
-├── index.html        # page structure + editable placeholder content
+IShachouI.github.io/
+├── index.html        # sections + accessible dialog + <noscript> fallback
 ├── css/
-│   └── styles.css     # night palette, hero overlay, chips, sections
+│   └── styles.css     # night palette, hero, reveal/gallery cards, dialog
 ├── js/
-│   ├── scene.js       # Canvas animation engine + fishing state machine
-│   └── app.js         # wires the scene to the DOM reveals + Skip button
+│   ├── scene.js       # Canvas engine + fishing state machine + reveal shimmer
+│   ├── projects.js    # the project catalog (edit projects here)
+│   └── app.js         # reveals, detail dialog, cast controls, reduced-motion
 ├── .nojekyll          # tell GitHub Pages to serve files as-is
 └── README.md
 ```
