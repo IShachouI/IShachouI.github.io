@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="dark" />
+  <meta name="description" content="Yaseen Osman — CS & Economics at Pomona College. A quiet, cinematic night-fishing portfolio intro." />
+  <title>Yaseen Osman — Portfolio</title>
+  <!-- Inline SVG favicon (moon tile) — avoids an extra request / 404. -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0f1a'/%3E%3Ccircle cx='16' cy='15' r='8' fill='%23e9eef6'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+  <!-- ============================================================
+       HEADER — minimal brand + Skip Intro control
+       ============================================================ -->
+  <header class="site-header">
+    <a class="brand" href="#top" aria-label="Back to top">YO</a>
+    <button id="skip-intro" class="skip-btn" type="button">
+      Skip Intro
+    </button>
+  </header>
+
+  <main id="top">
+    <!-- ============================================================
+         HERO — full-screen animated scene + overlay content.
+         The <canvas> renders the night-lake animation; the overlay
+         holds all real text (crisp DOM typography layered on top).
+         ============================================================ -->
+    <section class="hero" aria-label="Introduction">
+      <canvas id="scene" class="scene" aria-hidden="true"></canvas>
+
+      <div class="hero__overlay">
+        <div class="hero__inner">
+          <p class="kicker">Night fishing</p>
+
+          <!-- EDIT: your name -->
+          <h1 class="name">Yaseen&nbsp;Osman</h1>
+
+          <!-- EDIT: one-line intro -->
+          <p class="intro">
+            Computer Science &amp; Economics at Pomona College —
+            building thoughtful, useful software.
+          </p>
+
+          <!-- Interests double as quick navigation. They are revealed
+               one-by-one as the line is reeled in, then become focusable
+               links. data-index sets the reveal order; href is the jump
+               target. EDIT text/links freely. -->
+          <nav class="chips" aria-label="Quick navigation">
+            <a class="chip" data-index="0" style="--i:0" href="#work"
+               tabindex="-1" aria-hidden="true">Software Engineering</a>
+            <a class="chip" data-index="1" style="--i:1" href="#work"
+               tabindex="-1" aria-hidden="true">AI</a>
+            <a class="chip" data-index="2" style="--i:2" href="#about"
+               tabindex="-1" aria-hidden="true">Economics</a>
+            <a class="chip" data-index="3" style="--i:3" href="#work"
+               tabindex="-1" aria-hidden="true">Useful Products</a>
+            <a class="chip" data-index="4" style="--i:4"
+               href="https://www.pomona.edu" target="_blank" rel="noopener"
+               tabindex="-1" aria-hidden="true">Pomona College</a>
+            <a class="chip" data-index="5" style="--i:5" href="#work"
+               tabindex="-1" aria-hidden="true">Projects</a>
+          </nav>
+
+          <!-- Call-to-action buttons (revealed once the sequence settles). -->
+          <div class="cta">
+            <a class="btn btn--primary" href="#work">Explore Projects</a>
+            <a class="btn btn--ghost" href="#about">Enter Site</a>
+            <!-- Replays the fishing sequence in-place (no page reload). -->
+            <button id="cast-again" class="btn btn--text" type="button"
+                    aria-label="Replay the fishing animation">
+              <span aria-hidden="true">↺</span> Cast Again
+            </button>
+          </div>
+        </div>
+
+        <a class="scroll-hint" href="#about" aria-label="Scroll to about">
+          <span></span>
+        </a>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         FOLLOW-UP SECTIONS
+         ============================================================ -->
+    <section id="about" class="section">
+      <div class="section__inner">
+        <h2 class="section__title">About</h2>
+        <!-- EDIT: short bio -->
+        <p class="section__body">
+          I’m a Computer Science and Economics student at Pomona College,
+          interested in software engineering, AI, and building products that
+          are genuinely useful. I like work that is careful, minimal, and a
+          little bit playful.
+        </p>
+      </div>
+    </section>
+
+    <section id="work" class="section section--alt">
+      <div class="section__inner">
+        <h2 class="section__title">Projects</h2>
+        <ul class="cards">
+          <!-- Verified public project: Nudge -->
+          <li class="card">
+            <h3>Nudge</h3>
+            <p>Social planning for friend groups — making it easy to line up
+               plans everyone actually shows up to.</p>
+            <a href="https://nudgesocial.app" target="_blank" rel="noopener" class="card__link">
+              Live site →
+            </a>
+            <a href="https://github.com/IShachouI/nudge-website" target="_blank" rel="noopener" class="card__link">
+              Code →
+            </a>
+          </li>
+          <!-- Verified public project: Claremont Student Nutrition Tracker -->
+          <li class="card">
+            <h3>Claremont Student Nutrition Tracker</h3>
+            <p>Track and log meals across the Claremont Colleges dining halls.
+               <span class="card__tag">Java</span></p>
+            <a href="https://github.com/IShachouI/Claremont-Student-Nutrition-Tracker"
+               target="_blank" rel="noopener" class="card__link">Code →</a>
+          </li>
+          <!-- Link out to the rest -->
+          <li class="card card--more">
+            <h3>More on GitHub</h3>
+            <p>Browse the rest of what I’m building and experimenting with.</p>
+            <a href="https://github.com/IShachouI?tab=repositories"
+               target="_blank" rel="noopener" class="card__link">@IShachouI →</a>
+          </li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- ============================================================
+       FOOTER — contact links
+       ============================================================ -->
+  <footer id="contact" class="site-footer">
+    <!-- EDIT: replace the email + LinkedIn placeholders with your real values -->
+    <a href="mailto:your.email@example.com">Email</a>
+    <a href="https://github.com/IShachouI" target="_blank" rel="noopener">GitHub</a>
+    <a href="https://www.linkedin.com/in/your-handle" target="_blank" rel="noopener">LinkedIn</a>
+    <p class="copyright">© <span id="year"></span> Yaseen Osman</p>
+  </footer>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
