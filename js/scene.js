@@ -318,12 +318,12 @@ export class NightFishingScene {
     switch (this.phase) {
       case "settle": {
         // Quiet beat while the scene fades in, then cast.
-        if (T > 0.9) this._setPhase("cast");
+        if (T > 0.5) this._setPhase("cast");
         break;
       }
       case "cast": {
         // Bobber flies from rod tip out to the target on an arc.
-        const dur = 0.85;
+        const dur = 0.65;
         const t = clamp(T / dur, 0, 1);
         const e = easeOut(t);
         const arc = this.H * 0.22; // peak height of the cast
@@ -339,18 +339,18 @@ export class NightFishingScene {
       case "land": {
         // Bobber settles; let the first ripples breathe.
         this._restBobber();
-        if (T > 0.28) this._setPhase("wait");
+        if (T > 0.18) this._setPhase("wait");
         break;
       }
       case "wait": {
         // Idle bob while fish circle below.
         this._restBobber();
-        if (T > 0.55) this._setPhase("bite");
+        if (T > 0.35) this._setPhase("bite");
         break;
       }
       case "bite": {
         // A quick dip + ripple — something took the line.
-        const t = clamp(T / 0.32, 0, 1);
+        const t = clamp(T / 0.22, 0, 1);
         this.bobber.x = this.castTarget.x;
         this.bobber.y = this.castTarget.y + Math.sin(Math.PI * t) * 10;
         if (T > 0.1 && !this._bitRippled) { this._splash(this.castTarget.x, this.castTarget.y, 0.7); this._bitRippled = true; }
@@ -368,7 +368,7 @@ export class NightFishingScene {
             color: this.accents[this.index] || "#e9eef6",
           };
         }
-        const dur = 1.2;
+        const dur = 1.0;
         const t = clamp(T / dur, 0, 1);
         const e = easeInOut(t);
         this.bobber.x = lerp(this.castTarget.x, this.rodTip.x, e);
@@ -389,7 +389,7 @@ export class NightFishingScene {
       }
       case "pause": {
         // A longer beat so each discovered project has room to be read.
-        if (T > 2.4) this._setPhase("cast"); // next item
+        if (T > 1.0) this._setPhase("cast"); // next item
         break;
       }
       case "ambient":
