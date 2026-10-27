@@ -39,7 +39,7 @@ update — no other file changes. A project with private source simply omits
 ## File structure
 
 ```
-IShachouI.github.io/
+yaseen-osman.github.io/
 ├── index.html        # sections + accessible dialog + <noscript> fallback
 ├── css/
 │   └── styles.css     # night palette, hero, reveal/gallery cards, dialog

@@ -68,7 +68,7 @@ export const PROJECTS = [
     note: null,
     website: "https://nudgesocial.app",    // verified reachable (HTTP 200)
     websiteVerified: true,
-    repo: "https://github.com/IShachouI/nudge-website",
+    repo: "https://github.com/yaseen-osman/nudge-website",
     showCode: true,
     tags: ["Social", "Planning", "TypeScript"],
     primaryAction: { label: "Visit Website", href: "https://nudgesocial.app" },
@@ -94,12 +94,12 @@ export const PROJECTS = [
     note: null,
     website: null,
     websiteVerified: false,
-    repo: "https://github.com/IShachouI/Claremont-Student-Nutrition-Tracker",
+    repo: "https://github.com/yaseen-osman/Claremont-Student-Nutrition-Tracker",
     showCode: true,
     tags: ["Java", "Nutrition", "Student life"],
     primaryAction: {
       label: "View Code",
-      href: "https://github.com/IShachouI/Claremont-Student-Nutrition-Tracker",
+      href: "https://github.com/yaseen-osman/Claremont-Student-Nutrition-Tracker",
     },
   },
 ];
